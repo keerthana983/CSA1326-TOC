@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdbool.h>
+#define START_STATE 0
+#define ACCEPT_STATE 1
+#define REJECT_STATE -1
+int simulateDFA(const char *inputString) {
+    int currentState = START_STATE;
+    int i = 0;
+
+    while (inputString[i] != '\0') {
+        char inputSymbol = inputString[i];
+
+        switch (currentState) {
+            case START_STATE:
+                if (inputSymbol == '0') {
+                    currentState = ACCEPT_STATE;
+                } else {
+                    currentState = REJECT_STATE;
+                }
+                break;
+            case ACCEPT_STATE:
+                if (inputSymbol == '1') {
+                    currentState = ACCEPT_STATE;
+                } else {
+                    currentState = REJECT_STATE;
+                }
+                break;
+            case REJECT_STATE:
+                break; 
+        }
+
+        i++;
+    }
+
+    return currentState;
+}
+
+int main() {
+    char input[100];
+
+    printf("Enter a string: ");
+    scanf("%s", input);
+
+    int result = simulateDFA(input);
+
+    if (result == ACCEPT_STATE) {
+        printf("Accepted\n");
+    } else {
+        printf("Rejected\n");
+    }
+
+    return 0;
+}

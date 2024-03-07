@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+#define MAX_STATES 100
+typedef struct {
+    int transitions[MAX_STATES]; // Transitions on non-epsilon inputs
+    bool epsilon; // Indicates if it's an epsilon-transition
+} State;
+void computeEpsilonClosure(State nfa[], int state, bool visited[]) {
+    visited[state] = true; 
+    if (nfa[state].epsilon) {
+        for (int i = 0; nfa[state].transitions[i] != -1; i++) {
+            int nextState = nfa[state].transitions[i];
+            if (!visited[nextState]) {
+                computeEpsilonClosure(nfa, nextState, visited);
+            }
+        }
+    }
+}
+void findEpsilonClosure(State nfa[], int numStates) {
+    for (int i = 0; i < numStates; i++) {
+        bool visited[numStates];
+        for (int j = 0; j < numStates; j++) {
+            visited[j] = false; 
+        }
+        computeEpsilonClosure(nfa, i, visited);
+        printf("Epsilon closure of state %d: { ", i);
+        for (int j = 0; j < numStates; j++) {
+            if (visited[j]) {
+                printf("%d ", j);
+            }
+        }
+        printf("}\n");
+    }
+}
+
+int main() {
+    int numStates;
+    printf("Enter the number of states in the NFA: ");
+    scanf("%d", &numStates);
+    State nfa[numStates];
+    for (int i = 0; i < numStates; i++) {
+        nfa[i].epsilon = false; 
+        for (int j = 0; j < numStates; j++) {
+            nfa[i].transitions[j] = -1; 
+        }
+    }
+    for (int i = 0; i < numStates; i++) {
+        int numTransitions;
+        printf("Enter the number of transitions for state %d: ", i);
+        scanf("%d", &numTransitions);
+        printf("Enter transitions for state %d (use -1 to end): ", i);
+        for (int j = 0; j < numTransitions; j++) {
+            scanf("%d", &nfa[i].transitions[j]);
+        }
+        int epsilonTransition;
+        printf("Does state %d have epsilon transition? (1 for yes, 0 for no): ", i);
+        scanf("%d", &epsilonTransition);
+        nfa[i].epsilon = epsilonTransition == 1;
+    }
+    findEpsilonClosure(nfa, numStates);
+
+    return 0;
+}
